@@ -110,7 +110,7 @@ const sketch = async ({ context, width, height }) => {
   // Add a harsh light to the scene
   // Add a soft light to the scene
   const light = new THREE.HemisphereLight("white", "gray", 2);
-  light.position.set(100, 100, 2000);
+  light.position.set(1000, 300, 2000);
   scene.add(light);
 
   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -162,7 +162,7 @@ const sketch = async ({ context, width, height }) => {
       analyser.getByteFrequencyData(frequencyData);
 
       meshes.forEach((mesh, index) => {
-        const f = 0.1;
+        const f = 1;
         // mesh.scale.set(
         //   frequencyData[index] / 64,
         //   frequencyData[index] / 64,
