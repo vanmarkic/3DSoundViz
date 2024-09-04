@@ -108,8 +108,9 @@ const sketch = async ({ context, width, height }) => {
   scene.add(container);
 
   // Add a harsh light to the scene
-  const light = new THREE.DirectionalLight("white", 1);
-  light.position.set(0, 0, 2);
+  // Add a soft light to the scene
+  const light = new THREE.HemisphereLight("white", "gray", 1);
+  light.position.set(100, 100, 2000);
   scene.add(light);
 
   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -162,12 +163,11 @@ const sketch = async ({ context, width, height }) => {
 
       meshes.forEach((mesh, index) => {
         const f = 0.1;
-        mesh.scale.set(
-          (mesh.originalPosition.x * f * frequencyData[index]) / 64,
-          (mesh.originalPosition.y * f * frequencyData[index]) / 64,
-          (mesh.originalPosition.z * f * frequencyData[index]) / 64,
-          time * 2
-        );
+        // mesh.scale.set(
+        //   frequencyData[index] / 64,
+        //   frequencyData[index] / 64,
+        //   frequencyData[index] / 64
+        // );
         mesh.position.x =
           mesh.originalPosition.x +
           (frequencyData[index] / 128) *
