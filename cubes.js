@@ -109,7 +109,7 @@ const sketch = async ({ context, width, height }) => {
 
   // Add a harsh light to the scene
   // Add a soft light to the scene
-  const light = new THREE.HemisphereLight("white", "gray", 1);
+  const light = new THREE.HemisphereLight("white", "gray", 2);
   light.position.set(100, 100, 2000);
   scene.add(light);
 
