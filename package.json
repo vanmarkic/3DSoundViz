@@ -1,19 +1,61 @@
 {
-  "name": "ambientviz",
-  "version": "1.0.0",
-  "description": "",
-  "main": "oscilloscope.js",
+  "name": "autovj",
+  "version": "2.0.0",
+  "description": "Production-ready auto VJ solution with constructivist/deconstructivist aesthetics",
+  "main": "dist-electron/main.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "dev:electron": "npm run build && electron .",
+    "build": "tsc && vite build",
+    "build:electron": "npm run build && electron-builder",
+    "preview": "vite preview",
+    "lint": "eslint src --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit"
   },
-  "keywords": [],
+  "keywords": ["vj", "audio", "visualization", "electron", "three.js"],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "canvas-sketch": "^0.7.7",
-    "canvas-sketch-util": "^1.10.0",
-    "nice-color-palettes": "^3.0.0",
-    "p5": "^1.10.0",
-    "three": "^0.147.0"
+    "three": "^0.160.0",
+    "eventemitter3": "^5.0.1",
+    "stats.js": "^0.17.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "@types/three": "^0.160.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.12"
+  },
+  "optionalDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
+    "electron": "^28.2.0",
+    "electron-builder": "^24.9.1",
+    "eslint": "^8.56.0",
+    "vite-plugin-electron": "^0.28.2",
+    "vite-plugin-electron-renderer": "^0.14.5"
+  },
+  "build": {
+    "appId": "com.autovj.app",
+    "productName": "AutoVJ",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.graphics-design",
+      "target": ["dmg", "zip"]
+    },
+    "win": {
+      "target": ["nsis", "portable"]
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "category": "Graphics"
+    }
   }
 }
