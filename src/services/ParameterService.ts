@@ -52,6 +52,7 @@ export class ParameterService implements Disposable {
     this.defineParameter('depth', 0.5, 'linear', 0.1)
     this.defineParameter('motionBlur', 0.2, 'linear', 0.1)
     this.defineParameter('glitchAmount', 0.0, 'linear', 0.1)
+    this.defineParameter('liquidity', 0.5, 'linear', 0.15) // Higher smoothing for fluid motion
 
     // Subscribe to audio data for automation
     const unsubAudio = eventBus.on('audio:data', (audioData) => {
@@ -60,7 +61,7 @@ export class ParameterService implements Disposable {
     this.unsubscribers.push(unsubAudio)
 
     this.isInitialized = true
-    console.log('ParameterService initialized with 10 parameters')
+    console.log('ParameterService initialized with 11 parameters')
   }
 
   /**
@@ -97,7 +98,8 @@ export class ParameterService implements Disposable {
       asymmetry: 0.5,
       depth: 0.5,
       motionBlur: 0.2,
-      glitchAmount: 0.0
+      glitchAmount: 0.0,
+      liquidity: 0.5
     }
   }
 

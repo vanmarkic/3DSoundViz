@@ -144,6 +144,49 @@ npm run preview  # Preview production build
 npm run build:electron
 ```
 
+### 📱 Mobile & GitHub Pages Deployment
+
+**Quick Access**
+The app is automatically deployed to GitHub Pages and accessible on mobile devices:
+```
+https://vanmarkic.github.io/3DSoundViz/
+```
+
+**Mobile Optimizations**
+- ✅ Responsive UI that adapts to portrait/landscape
+- ✅ Touch-friendly controls with larger tap targets
+- ✅ Automatic performance optimization for mobile devices
+- ✅ Reduced pixel ratio and quality settings on mobile
+- ✅ 30 FPS target on mobile (vs 60 FPS desktop)
+- ✅ iOS safe area support
+
+**Deploying to GitHub Pages**
+
+The app automatically deploys to GitHub Pages on every push to `main` or `master` branch via GitHub Actions.
+
+To enable GitHub Pages for your fork:
+1. Go to your repository **Settings** → **Pages**
+2. Under "Source", select **GitHub Actions**
+3. Push to `main` or `master` branch
+4. Access your deployment at: `https://<username>.github.io/3DSoundViz/`
+
+**Manual Deployment**
+```bash
+# Build for production
+npm run build
+
+# The dist/ folder can be deployed to any static hosting service
+# (Netlify, Vercel, Cloudflare Pages, etc.)
+```
+
+**Mobile Browser Tips**
+- **Chrome/Edge**: Full support, best performance
+- **Safari iOS**: Works great, may need to tap "Allow" for audio
+- **Firefox Mobile**: Full support
+- Add to home screen for app-like experience
+- Use landscape mode for side-panel UI layout
+- Portrait mode shows bottom-sheet UI style
+
 ## 🎮 Usage
 
 ### Controls

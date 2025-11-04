@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0a0a0a">
   <title>AutoVJ - Audio Visual Experience</title>
   <style>
     * {
@@ -313,6 +317,175 @@
 
     .ui-container::-webkit-scrollbar-thumb:hover {
       background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Mobile Optimizations */
+    @media (max-width: 768px) {
+      .ui-container {
+        width: 100%;
+        max-width: 100%;
+        top: auto;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        border-radius: 16px 16px 0 0;
+        max-height: 50vh;
+        padding: 16px;
+      }
+
+      .ui-header h2 {
+        font-size: 16px;
+      }
+
+      .ui-header p {
+        font-size: 11px;
+      }
+
+      .param-control {
+        margin-bottom: 12px;
+      }
+
+      .param-control label {
+        font-size: 11px;
+      }
+
+      .param-control input[type="range"] {
+        height: 6px;
+      }
+
+      .param-control input[type="range"]::-webkit-slider-thumb {
+        width: 20px;
+        height: 20px;
+      }
+
+      .param-control input[type="range"]::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+      }
+
+      .ui-actions button {
+        padding: 12px;
+        font-size: 14px;
+      }
+
+      .stats-grid {
+        font-size: 10px;
+      }
+
+      .permission-dialog {
+        max-width: 90%;
+        padding: 24px;
+      }
+
+      .permission-dialog h2 {
+        font-size: 24px;
+      }
+
+      .permission-dialog button {
+        padding: 16px;
+        font-size: 16px;
+      }
+    }
+
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+      .ui-actions button,
+      .permission-dialog button {
+        min-height: 44px;
+        touch-action: manipulation;
+      }
+
+      .param-control input[type="range"] {
+        touch-action: pan-y;
+      }
+    }
+
+    /* Landscape mobile */
+    @media (max-width: 768px) and (orientation: landscape) {
+      .ui-container {
+        width: 50%;
+        max-width: 400px;
+        right: 0;
+        left: auto;
+        top: 0;
+        bottom: 0;
+        border-radius: 0;
+        max-height: 100vh;
+      }
+    }
+
+    /* iOS safe area support */
+    @supports (padding: max(0px)) {
+      .ui-container {
+        padding-bottom: max(20px, env(safe-area-inset-bottom));
+        padding-left: max(20px, env(safe-area-inset-left));
+        padding-right: max(20px, env(safe-area-inset-right));
+      }
+    }
+
+    /* Color Palette Browser */
+    .ui-palettes {
+      margin-bottom: 16px;
+    }
+
+    .palette-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .palette-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .palette-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: scale(1.02);
+    }
+
+    .palette-item.active {
+      border-color: #ff0000;
+      background: rgba(255, 0, 0, 0.1);
+    }
+
+    .palette-swatches {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 6px;
+    }
+
+    .color-swatch {
+      flex: 1;
+      height: 20px;
+      border-radius: 3px;
+    }
+
+    .palette-label {
+      font-size: 10px;
+      text-align: center;
+      color: #aaa;
+      font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      .palette-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .color-swatch {
+        height: 16px;
+      }
+
+      .palette-label {
+        font-size: 9px;
+      }
     }
   </style>
 </head>

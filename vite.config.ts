@@ -45,6 +45,8 @@ if (electron && renderer) {
 }
 
 export default defineConfig({
+  // GitHub Pages requires a base path matching the repo name
+  base: process.env.NODE_ENV === 'production' ? '/3DSoundViz/' : '/',
   plugins,
   resolve: {
     alias: {

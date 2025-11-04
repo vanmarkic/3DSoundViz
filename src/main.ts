@@ -82,9 +82,19 @@ class AutoVJApp {
   }
 
   /**
+   * Detect if running on mobile device
+   */
+  private isMobileDevice(): boolean {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+           (window.innerWidth <= 768)
+  }
+
+  /**
    * Initialize all services
    */
   private initializeServices(): void {
+    const isMobile = this.isMobileDevice()
+
     // Create services
     this.audioService = new AudioService()
     this.parameterService = new ParameterService()
@@ -106,13 +116,14 @@ class AutoVJApp {
     this.lfoService.initialize(this.parameterService)
 
     if (this.canvas) {
+      // Mobile-optimized settings
       this.renderEngine.initialize(this.canvas, {
         width: window.innerWidth,
         height: window.innerHeight,
-        pixelRatio: Math.min(window.devicePixelRatio, 2),
-        antialias: true,
-        quality: 'high',
-        targetFPS: 60
+        pixelRatio: isMobile ? 1 : Math.min(window.devicePixelRatio, 2),
+        antialias: !isMobile, // Disable AA on mobile for performance
+        quality: isMobile ? 'medium' : 'high',
+        targetFPS: isMobile ? 30 : 60
       })
     }
 
@@ -124,6 +135,10 @@ class AutoVJApp {
 
     // Set up some default automations
     this.setupDefaultAutomations()
+
+    if (isMobile) {
+      console.log('📱 Mobile device detected - using optimized settings')
+    }
   }
 
   /**

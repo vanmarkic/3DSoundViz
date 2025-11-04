@@ -62,6 +62,7 @@ export type ParameterName =
   | 'depth'
   | 'motionBlur'
   | 'glitchAmount'
+  | 'liquidity'
 
 export interface ParameterConfig {
   name: ParameterName
@@ -84,6 +85,7 @@ export interface ParameterValues {
   depth: number
   motionBlur: number
   glitchAmount: number
+  liquidity: number
 }
 
 export interface AutomationMapping {

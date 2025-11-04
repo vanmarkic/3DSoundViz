@@ -86,6 +86,9 @@ export class UIService implements Disposable {
       paramsSection.appendChild(control)
     })
 
+    // Create color palette browser section
+    this.createPaletteBrowser()
+
     // Create stats section
     this.createStatsDisplay()
 
@@ -144,6 +147,81 @@ export class UIService implements Disposable {
     wrapper.appendChild(display)
 
     return wrapper
+  }
+
+  /**
+   * Create color palette browser
+   */
+  private createPaletteBrowser(): void {
+    const paletteSection = document.createElement('div')
+    paletteSection.className = 'ui-section ui-palettes'
+
+    const header = document.createElement('h3')
+    header.textContent = 'Color Palettes'
+    paletteSection.appendChild(header)
+
+    // Define color palettes
+    const palettes = [
+      { name: 'Constructivist', colors: ['#FF0000', '#000000', '#FFFFFF', '#FFD700', '#0000FF'] },
+      { name: 'Neon', colors: ['#FF006E', '#00F5FF', '#FFBE0B', '#8338EC', '#3A86FF'] },
+      { name: 'Sunset', colors: ['#FF4500', '#FF6347', '#FF7F50', '#FF8C00', '#FFD700'] },
+      { name: 'Ocean', colors: ['#006994', '#0080A8', '#0096BB', '#00ACCF', '#00C2E3'] },
+      { name: 'Forest', colors: ['#2D5016', '#3F6D1E', '#518A27', '#63A72F', '#75C437'] },
+      { name: 'Monochrome', colors: ['#000000', '#404040', '#808080', '#C0C0C0', '#FFFFFF'] },
+      { name: 'Pastel', colors: ['#FFB3BA', '#FFDFBA', '#FFFFBA', '#BAFFC9', '#BAE1FF'] },
+      { name: 'Cyberpunk', colors: ['#FF00FF', '#00FFFF', '#FFFF00', '#FF0080', '#00FF80'] }
+    ]
+
+    const paletteGrid = document.createElement('div')
+    paletteGrid.className = 'palette-grid'
+
+    palettes.forEach((palette) => {
+      const paletteItem = document.createElement('div')
+      paletteItem.className = 'palette-item'
+      paletteItem.title = palette.name
+
+      // Create color swatches
+      const swatches = document.createElement('div')
+      swatches.className = 'palette-swatches'
+      palette.colors.forEach((color) => {
+        const swatch = document.createElement('div')
+        swatch.className = 'color-swatch'
+        swatch.style.backgroundColor = color
+        swatches.appendChild(swatch)
+      })
+
+      const label = document.createElement('div')
+      label.className = 'palette-label'
+      label.textContent = palette.name
+
+      paletteItem.appendChild(swatches)
+      paletteItem.appendChild(label)
+
+      // Click to apply palette
+      paletteItem.onclick = () => {
+        // Get VisualService from container and update palette
+        const visualService = (window as any).autoVJ?.visualService
+        if (visualService && typeof visualService.setColorPalette === 'function') {
+          visualService.setColorPalette(palette.colors)
+          console.log('🎨 Palette changed to:', palette.name)
+        }
+        // Visual feedback
+        document.querySelectorAll('.palette-item').forEach((item) => {
+          item.classList.remove('active')
+        })
+        paletteItem.classList.add('active')
+      }
+
+      paletteGrid.appendChild(paletteItem)
+    })
+
+    paletteSection.appendChild(paletteGrid)
+    this.container?.appendChild(paletteSection)
+
+    // Set first palette as active
+    setTimeout(() => {
+      paletteGrid.querySelector('.palette-item')?.classList.add('active')
+    }, 0)
   }
 
   /**

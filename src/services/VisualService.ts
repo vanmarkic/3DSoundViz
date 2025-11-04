@@ -399,11 +399,41 @@ export class VisualService implements Disposable {
         mesh.position.x += Math.sin(this.time * 2 + i) * (params.asymmetry - 0.5) * 3
         mesh.position.z += Math.cos(this.time * 2 + i) * (params.asymmetry - 0.5) * 3
       }
+
+      // Liquidity: smooth organic wave motion and deformation
+      if (params.liquidity > 0.1) {
+        const liquidSpeed = 0.5 + params.liquidity * 2
+        const liquidAmp = params.liquidity * 3
+
+        // Wave motion
+        const waveX = Math.sin(this.time * liquidSpeed + i * 0.5) * liquidAmp
+        const waveY = Math.cos(this.time * liquidSpeed * 0.7 + i * 0.3) * liquidAmp
+        const waveZ = Math.sin(this.time * liquidSpeed * 0.9 + i * 0.7) * liquidAmp
+
+        mesh.position.x += waveX
+        mesh.position.y += waveY
+        mesh.position.z += waveZ
+
+        // Organic deformation (scale pulsing)
+        const pulse = 1 + Math.sin(this.time * liquidSpeed * 2 + i) * params.liquidity * 0.2
+        mesh.scale.multiplyScalar(pulse)
+
+        // Rotation with liquidity
+        mesh.rotation.x += Math.sin(this.time * liquidSpeed + i) * params.liquidity * 0.01
+        mesh.rotation.y += Math.cos(this.time * liquidSpeed * 1.3 + i) * params.liquidity * 0.01
+      }
     }
 
     // Update camera based on parameters
     const depth = params.depth * 20 + 20
     this.camera.position.z = depth
+
+    // Camera liquid motion
+    if (params.liquidity > 0.3) {
+      this.camera.position.x = Math.sin(this.time * 0.2) * params.liquidity * 2
+      this.camera.position.y = Math.cos(this.time * 0.15) * params.liquidity * 1.5
+      this.camera.lookAt(0, 0, 0)
+    }
 
     // Store previous params
     this.previousParams = { ...params }
