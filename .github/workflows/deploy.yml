@@ -3,8 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main
-      - master
+      - claude/auto-vj-solution-011CUoTmZmc9cuU7WNircwiG
   workflow_dispatch:
 
 permissions:
