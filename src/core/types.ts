@@ -346,6 +346,7 @@ export interface ServiceEvents {
   'audio:data': AudioData
   'audio:beat': BeatData
   'audio:error': Error
+  'audio:sensitivity-changed': AudioSensitivity
 
   // Data source events
   'datasource:added': DataSource
@@ -415,6 +416,7 @@ export interface AppConfig {
     defaultDevice: string
     sampleRate: number
     fftSize: number
+    sensitivity?: AudioSensitivity
   }
   render: {
     fps: number
@@ -425,6 +427,13 @@ export interface AppConfig {
     codec: string
     bitrate: number
   }
+}
+
+export interface AudioSensitivity {
+  master: number      // 5-300%
+  low: number         // 5-300%
+  mid: number         // 5-300%
+  high: number        // 5-300%
 }
 
 export type Disposable = {
