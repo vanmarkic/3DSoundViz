@@ -147,7 +147,8 @@ class AutoVJApp {
     // Initialize LFO service
     this.lfoService.initialize(this.parameterService)
 
-    // UIService will be fully initialized after audioService is ready
+    // Initialize UI - audio controls will be added later after audio permission
+    this.uiService.initialize(this.parameterService)
 
     // Initialize data source service
     this.dataSourceService.initialize()

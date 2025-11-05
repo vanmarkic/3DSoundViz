@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Physics Mode</title>
+</head>
+<body>
+  <script type="module">
+    import { container } from './src/core/ServiceContainer.js';
+    
+    // Wait for app to initialize
+    setTimeout(() => {
+      const physicsService = container.get('physicsService');
+      console.log('Current mode:', physicsService.getMode());
+      console.log('Switching to lava mode...');
+      physicsService.setMode('lava', 0);
+      console.log('New mode:', physicsService.getMode());
+    }, 2000);
+  </script>
+</body>
+</html>

@@ -50,6 +50,8 @@ export class LFOService implements Disposable {
       amplitude: config.amplitude,
       offset: config.offset,
       enabled: config.enabled,
+      target: config.target,
+      modulationAmount: config.modulationAmount,
       currentValue: 0,
       currentPhase: config.phase
     }

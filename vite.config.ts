@@ -56,7 +56,9 @@ export default defineConfig({
       '@visuals': path.resolve(__dirname, './src/visuals'),
       '@audio': path.resolve(__dirname, './src/audio'),
       '@ui': path.resolve(__dirname, './src/ui'),
-      '@utils': path.resolve(__dirname, './src/utils')
+      '@utils': path.resolve(__dirname, './src/utils'),
+      '@physics': path.resolve(__dirname, './src/physics'),
+      '@shaders': path.resolve(__dirname, './src/shaders')
     }
   },
   build: {
