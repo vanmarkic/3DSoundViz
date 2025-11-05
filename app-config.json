@@ -1,0 +1,27 @@
+{
+  "window": {
+    "width": 1920,
+    "height": 1080,
+    "fullscreen": false
+  },
+  "audio": {
+    "defaultDevice": "default",
+    "sampleRate": 48000,
+    "fftSize": 2048,
+    "sensitivity": {
+      "master": 100,
+      "low": 100,
+      "mid": 100,
+      "high": 100
+    }
+  },
+  "render": {
+    "fps": 60,
+    "quality": "high",
+    "antialias": true
+  },
+  "video": {
+    "codec": "VP9",
+    "bitrate": 10000000
+  }
+}
