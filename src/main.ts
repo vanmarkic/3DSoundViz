@@ -291,10 +291,9 @@ class AutoVJApp {
                 smoothingTimeConstant: 0.8
               })
 
-              // Initialize UIService with audioService reference
-              if (this.uiService && this.parameterService && this.audioService) {
-                this.uiService.initialize(this.parameterService, this.audioService as any)
-                console.log('✅ UIService initialized with audio sensitivity controls')
+              // Add audio controls to UIService now that audioService is ready
+              if (this.uiService && this.audioService) {
+                this.uiService.addAudioControls(this.audioService as any)
               }
 
               overlay.remove()

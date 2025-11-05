@@ -382,6 +382,26 @@ export class UIService implements Disposable {
   }
 
   /**
+   * Add audio controls after initial initialization
+   * Called when audioService becomes available
+   */
+  addAudioControls(audioService: AudioServiceInterface): void {
+    if (!audioService) {
+      console.warn('Cannot add audio controls: audioService is null')
+      return
+    }
+
+    if (this.sensitivityContainer) {
+      console.log('Audio controls already exist')
+      return
+    }
+
+    this.audioService = audioService
+    this.createSensitivityControls()
+    console.log('✅ Audio sensitivity controls added')
+  }
+
+  /**
    * Create sensitivity control panel
    */
   private createSensitivityControls(): void {
