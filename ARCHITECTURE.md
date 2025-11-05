@@ -71,6 +71,7 @@ A production-ready, modular auto VJ solution with constructivist/deconstructivis
 - Web Audio API integration
 - High-resolution FFT analysis (configurable size: 512-8192)
 - Frequency band grouping (bass, low-mid, mid, high-mid, treble)
+- **Sensitivity controls (master + 3 bands: 5-300%)**
 - Beat detection (kick, snare, hi-hat)
 - RMS/peak level monitoring per channel
 - Onset detection for transients
@@ -82,6 +83,11 @@ class AudioService {
   async initialize(config)
   selectInput(deviceId, channelCount)
   setFFTSize(size)
+  setMasterSensitivity(percent)
+  setLowSensitivity(percent)
+  setMidSensitivity(percent)
+  setHighSensitivity(percent)
+  getSensitivities()
   getFrequencyData(channel = 0): Float32Array
   getFrequencyBands(channel = 0): { bass, lowMid, mid, highMid, treble }
   getRMS(channel = 0): number
@@ -95,6 +101,7 @@ class AudioService {
 - `audio:initialized`
 - `audio:data` (every frame)
 - `audio:beat` (on beat detection)
+- `audio:sensitivity-changed`
 - `audio:error`
 
 ### 2. ParameterService
@@ -281,7 +288,8 @@ class VisualService {
 
 ```
 1. AudioService analyzes input
-   ├─> Emits 'audio:data' event
+   ├─> Applies sensitivity scaling (master + bands)
+   ├─> Emits 'audio:data' event with scaled values
    └─> Emits 'audio:beat' event (if beat detected)
 
 2. LFOService updates all LFOs
