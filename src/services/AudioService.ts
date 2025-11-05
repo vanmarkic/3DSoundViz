@@ -58,7 +58,7 @@ export class AudioService implements Disposable {
   /**
    * Initialize audio system
    */
-  async initialize(config?: Partial<AudioConfig>): Promise<void> {
+  async initialize(config?: Partial<AudioConfig & { sensitivity?: AudioSensitivity }>): Promise<void> {
     if (this.isInitialized) {
       console.warn('AudioService already initialized')
       return
@@ -118,6 +118,15 @@ export class AudioService implements Disposable {
 
       eventBus.emit('audio:initialized', this.config)
       console.log(`AudioService initialized: ${actualChannels} channels, ${this.config.fftSize} FFT size`)
+
+      // Load sensitivity from config (if provided)
+      if (config?.sensitivity) {
+        this.setMasterSensitivity(config.sensitivity.master)
+        this.setLowSensitivity(config.sensitivity.low)
+        this.setMidSensitivity(config.sensitivity.mid)
+        this.setHighSensitivity(config.sensitivity.high)
+        console.log('Loaded sensitivity from config:', config.sensitivity)
+      }
 
       // Start analysis loop
       this.startAnalysis()
