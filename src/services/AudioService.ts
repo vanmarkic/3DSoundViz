@@ -206,7 +206,9 @@ export class AudioService implements Disposable {
       peak.push(this.calculatePeak(freqFloat))
 
       // Extract frequency bands
-      bands.push(this.extractFrequencyBands(freqFloat, analyser))
+      const rawBands = this.extractFrequencyBands(freqFloat, analyser)
+      const scaledBands = this.applySensitivityScaling(rawBands)
+      bands.push(scaledBands)  // Push scaled, not raw
     }
 
     // Beat detection on channel 0 (or sum of all channels)
@@ -280,6 +282,26 @@ export class AudioService implements Disposable {
       mid: getBandEnergy(500, 2000),
       highMid: getBandEnergy(2000, 4000),
       treble: getBandEnergy(4000, 20000)
+    }
+  }
+
+  /**
+   * Apply sensitivity scaling to frequency bands
+   */
+  private applySensitivityScaling(bands: FrequencyBands): FrequencyBands {
+    // Convert percentages to decimals
+    const masterDecimal = this.masterSensitivity / 100
+    const lowDecimal = this.lowSensitivity / 100
+    const midDecimal = this.midSensitivity / 100
+    const highDecimal = this.highSensitivity / 100
+
+    // Apply scaling (values CAN exceed 1.0)
+    return {
+      bass: bands.bass * lowDecimal * masterDecimal,
+      lowMid: bands.lowMid * lowDecimal * masterDecimal,
+      mid: bands.mid * midDecimal * masterDecimal,
+      highMid: bands.highMid * midDecimal * masterDecimal,
+      treble: bands.treble * highDecimal * masterDecimal
     }
   }
 
