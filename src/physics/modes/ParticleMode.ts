@@ -120,7 +120,7 @@ export class ParticleMode implements PhysicsMode {
     }
   }
 
-  update(deltaTime: number, params: PhysicsModeParams, audioData: AudioData): void {
+  update(deltaTime: number, params: PhysicsModeParams, audioData?: AudioData): void {
     if (!this.geometry) return
 
     this.time += deltaTime

@@ -35,9 +35,9 @@ export interface PhysicsMode extends Disposable {
    * Update physics simulation
    * @param deltaTime Fixed timestep in seconds
    * @param params Parameter values for this mode
-   * @param audioData Current audio analysis data
+   * @param audioData Current audio analysis data (optional during initialization)
    */
-  update(deltaTime: number, params: PhysicsModeParams, audioData: AudioData): void
+  update(deltaTime: number, params: PhysicsModeParams, audioData?: AudioData): void
 
   /**
    * Render the visual output
