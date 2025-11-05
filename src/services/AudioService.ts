@@ -40,6 +40,20 @@ export class AudioService implements Disposable {
   private isInitialized = false
   private animationFrameId: number | null = null
 
+  // Sensitivity controls (5-300%)
+  private masterSensitivity: number = 100
+  private targetMasterSensitivity: number = 100
+  private readonly SMOOTHING_TIME = 0.2 // 200ms
+
+  private lowSensitivity: number = 100
+  private midSensitivity: number = 100
+  private highSensitivity: number = 100
+
+  private readonly MIN_SENSITIVITY = 5
+  private readonly MAX_SENSITIVITY = 300
+
+  private lastFrameTime: number = performance.now()
+
   /**
    * Initialize audio system
    */
