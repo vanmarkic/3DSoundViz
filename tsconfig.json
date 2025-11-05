@@ -28,7 +28,9 @@
       "@visuals/*": ["src/visuals/*"],
       "@audio/*": ["src/audio/*"],
       "@ui/*": ["src/ui/*"],
-      "@utils/*": ["src/utils/*"]
+      "@utils/*": ["src/utils/*"],
+      "@physics/*": ["src/physics/*"],
+      "@shaders/*": ["src/shaders/*"]
     }
   },
   "include": ["src/**/*.ts"],
