@@ -11,6 +11,7 @@ import { VisualService } from '@services/VisualService'
 import { UIService } from '@services/UIService'
 import { DataSourceService } from '@services/DataSourceService'
 import { DataSourcePanel } from './ui/DataSourcePanel'
+import { PhysicsService } from '@services/PhysicsService'
 import { container } from '@core/ServiceContainer'
 import { eventBus } from '@core/EventBus'
 import type { AudioData, ParameterValues } from '@core/types'
@@ -28,6 +29,7 @@ class AutoVJApp {
   private uiService: UIService | null = null
   private dataSourceService: DataSourceService | null = null
   private dataSourcePanel: DataSourcePanel | null = null
+  private physicsService: PhysicsService | null = null
 
   // State
   private isRunning = false
@@ -108,6 +110,7 @@ class AutoVJApp {
     this.visualService = new VisualService()
     this.uiService = new UIService()
     this.dataSourceService = new DataSourceService()
+    this.physicsService = new PhysicsService()
 
     // Register in container
     container.registerInstance('audioService', this.audioService)
@@ -117,11 +120,12 @@ class AutoVJApp {
     container.registerInstance('visualService', this.visualService)
     container.registerInstance('uiService', this.uiService)
     container.registerInstance('dataSourceService', this.dataSourceService)
+    container.registerInstance('physicsService', this.physicsService)
 
     // Initialize services
     this.parameterService.initialize()
-    this.lfoService.initialize(this.parameterService)
 
+    // Initialize render engine first
     if (this.canvas) {
       // Mobile-optimized settings
       this.renderEngine.initialize(this.canvas, {
@@ -134,8 +138,19 @@ class AutoVJApp {
       })
     }
 
+    // Initialize visual service
     this.visualService.initialize(this.renderEngine)
+
+    // Initialize physics service after render engine
+    this.physicsService.initialize(this.renderEngine)
+
+    // Initialize LFO service
+    this.lfoService.initialize(this.parameterService)
+
+    // Initialize UI
     this.uiService.initialize(this.parameterService)
+
+    // Initialize data source service
     this.dataSourceService.initialize()
 
     // Create data source panel
@@ -181,7 +196,7 @@ class AutoVJApp {
   private createDefaultLFOs(): void {
     if (!this.lfoService) return
 
-    // LFO 1: Slow sine for rotation speed
+    // LFO 1: Slow sine - can target rotation speed or other params
     const lfo1 = this.lfoService.createLFO({
       waveform: 'sine',
       mode: 'free',
@@ -190,10 +205,12 @@ class AutoVJApp {
       phase: 0,
       amplitude: 0.3,
       offset: 0.5,
-      enabled: false // Disabled by default
+      enabled: false, // Disabled by default
+      target: null, // No target by default - user will assign
+      modulationAmount: 0.5
     })
 
-    // LFO 2: Triangle for scale
+    // LFO 2: Triangle - can modulate params or even LFO1's frequency!
     const lfo2 = this.lfoService.createLFO({
       waveform: 'triangle',
       mode: 'synced',
@@ -202,7 +219,9 @@ class AutoVJApp {
       phase: 0,
       amplitude: 0.2,
       offset: 0.5,
-      enabled: false // Disabled by default
+      enabled: false, // Disabled by default
+      target: null, // No target by default - user will assign
+      modulationAmount: 0.5
     })
 
     console.log('Created default LFOs:', lfo1, lfo2)
@@ -327,16 +346,30 @@ class AutoVJApp {
     // Get current parameters
     const params = this.parameterService?.getAll() as ParameterValues
 
+    // Update physics
+    this.physicsService?.update(deltaTime, this.currentAudioData)
+
     // Update visuals with parameters and audio
     if (this.currentAudioData && params) {
       this.visualService?.update(params, this.currentAudioData)
     }
 
-    // Render scene
+    // Render main scene
     const scene = this.visualService?.getScene()
     const camera = this.visualService?.getCamera()
     if (scene && camera) {
       this.renderEngine?.render(scene, camera)
+    }
+
+    // Render physics scene (composite over main scene)
+    const physicsScene = this.physicsService?.getScene()
+    if (physicsScene && camera) {
+      const renderer = this.renderEngine?.getRenderer()
+      if (renderer) {
+        renderer.autoClear = false
+        renderer.render(physicsScene, camera)
+        renderer.autoClear = true
+      }
     }
 
     // Continue loop
@@ -383,6 +416,7 @@ class AutoVJApp {
     this.dataSourceService?.dispose()
     this.uiService?.dispose()
     this.visualService?.dispose()
+    this.physicsService?.dispose()
     this.renderEngine?.dispose()
     this.lfoService?.dispose()
     this.parameterService?.dispose()
