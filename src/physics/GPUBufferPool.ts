@@ -8,6 +8,7 @@ interface BufferPoolEntry {
   buffer: THREE.DataTexture
   inUse: boolean
   size: number
+  bytesPerElement: number
 }
 
 export class GPUBufferPool {
@@ -35,9 +36,30 @@ export class GPUBufferPool {
 
     // Create new texture
     const size = width * height * 4 // RGBA
-    const data = new Float32Array(size)
+
+    // Create appropriate typed array based on texture type
+    let data: Uint8Array | Uint16Array | Float32Array
+    let bytesPerElement: number
+
+    switch (type) {
+      case THREE.UnsignedByteType:
+        data = new Uint8Array(size) as Uint8Array
+        bytesPerElement = 1
+        break
+      case THREE.UnsignedShortType:
+      case THREE.HalfFloatType:
+        data = new Uint16Array(size) as Uint16Array
+        bytesPerElement = 2
+        break
+      case THREE.FloatType:
+      default:
+        data = new Float32Array(size) as Float32Array
+        bytesPerElement = 4
+        break
+    }
+
     const texture = new THREE.DataTexture(
-      data,
+      data as any, // TypeScript workaround for typed array union
       width,
       height,
       format,
@@ -48,7 +70,18 @@ export class GPUBufferPool {
     const entry: BufferPoolEntry = {
       buffer: texture,
       inUse: true,
-      size
+      size,
+      bytesPerElement
+    }
+
+    // Enforce max pool size - dispose oldest unused texture if limit reached
+    if (pool.length >= this.maxPoolSize) {
+      const oldestUnused = pool.find(e => !e.inUse)
+      if (oldestUnused) {
+        oldestUnused.buffer.dispose()
+        const index = pool.indexOf(oldestUnused)
+        pool.splice(index, 1)
+      }
     }
 
     pool.push(entry)
@@ -65,6 +98,11 @@ export class GPUBufferPool {
         entry.inUse = false
         return
       }
+    }
+
+    // Warn in development mode if texture not found
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('GPUBufferPool: Attempted to release texture that is not in pool')
     }
   }
 
@@ -90,7 +128,7 @@ export class GPUBufferPool {
   getMemoryUsage(): number {
     let totalBytes = 0
     for (const pool of this.textures.values()) {
-      totalBytes += pool.reduce((sum, entry) => sum + entry.size * 4, 0) // 4 bytes per float
+      totalBytes += pool.reduce((sum, entry) => sum + entry.size * entry.bytesPerElement, 0)
     }
     return totalBytes / (1024 * 1024)
   }
