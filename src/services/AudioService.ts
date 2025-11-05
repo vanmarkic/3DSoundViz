@@ -131,11 +131,27 @@ export class AudioService implements Disposable {
   }
 
   /**
+   * Update master sensitivity smoothing (linear interpolation)
+   */
+  private updateMasterSensitivitySmoothing(): void {
+    const now = performance.now()
+    const deltaTime = (now - this.lastFrameTime) / 1000 // Convert to seconds
+    this.lastFrameTime = now
+
+    // Linear interpolation toward target
+    const alpha = Math.min(1, deltaTime / this.SMOOTHING_TIME)
+    this.masterSensitivity += (this.targetMasterSensitivity - this.masterSensitivity) * alpha
+  }
+
+  /**
    * Start continuous audio analysis loop
    */
   private startAnalysis(): void {
     const analyze = () => {
       if (!this.isInitialized) return
+
+      // Update master sensitivity smoothing
+      this.updateMasterSensitivitySmoothing()
 
       const audioData = this.getAudioData()
       eventBus.emit('audio:data', audioData)
