@@ -17,6 +17,7 @@ import type {
 import type { RenderEngine } from './RenderEngine'
 import type { PhysicsMode, PhysicsModeParams } from '@physics/modes/PhysicsMode'
 import { ParticleMode } from '@physics/modes/ParticleMode'
+import { LavaMode } from '@physics/modes/LavaMode'
 import { GPUBufferPool } from '@physics/GPUBufferPool'
 
 export class PhysicsService implements Disposable {
@@ -60,6 +61,7 @@ export class PhysicsService implements Disposable {
 
     // Register available modes
     this.modeRegistry.set('particles', () => new ParticleMode())
+    this.modeRegistry.set('lava', () => new LavaMode())
     // More modes will be registered here as we implement them
   }
 
@@ -136,6 +138,16 @@ export class PhysicsService implements Disposable {
       this.parameters['size'] = 0.2
       this.parameters['glow'] = 0.5
       this.parameters['speed'] = 0.5
+    } else if (this.activeModeName === 'lava') {
+      this.parameters['viscosity'] = 0.5
+      this.parameters['temperature'] = 0.7
+      this.parameters['scale'] = 0.5
+      this.parameters['flowSpeed'] = 0.5
+      this.parameters['turbulence'] = 0.3
+      this.parameters['colorIntensity'] = 1.0
+      this.parameters['contrast'] = 0.6
+      this.parameters['depth'] = 0.4
+      this.parameters['distortion'] = 0.5
     }
   }
 

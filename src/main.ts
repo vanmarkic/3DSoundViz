@@ -437,6 +437,7 @@ if (document.readyState === 'loading') {
 
     // Expose for debugging
     ;(window as any).autoVJ = app
+    ;(window as any).container = container
   })
 } else {
   const app = new AutoVJApp()
@@ -444,4 +445,5 @@ if (document.readyState === 'loading') {
 
   // Expose for debugging
   ;(window as any).autoVJ = app
+  ;(window as any).container = container
 }
