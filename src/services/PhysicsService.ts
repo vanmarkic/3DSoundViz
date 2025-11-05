@@ -51,6 +51,9 @@ export class PhysicsService implements Disposable {
   private frameCount = 0
   private fpsAccumulator = 0
 
+  // Store last audio data as fallback when update() called without audioData
+  private lastAudioData: AudioData | null = null
+
   constructor() {
     this.scene = new THREE.Scene()
     this.bufferPool = new GPUBufferPool()
@@ -89,12 +92,10 @@ export class PhysicsService implements Disposable {
     }
 
     // For now, simple instant switch (transition system comes later)
-    if (this.currentMode) {
-      this.currentMode.dispose()
-      this.modeInstances.delete(this.activeModeName)
-    }
+    // Note: Modes are cached in modeInstances for performance
+    // They are only disposed during final cleanup in dispose()
 
-    // Create or get mode instance
+    // Create or get mode instance from cache
     let modeInstance = this.modeInstances.get(mode)
     if (!modeInstance) {
       const factory = this.modeRegistry.get(mode)!
@@ -183,19 +184,23 @@ export class PhysicsService implements Disposable {
   }
 
   private updateFromAudio(audioData: AudioData): void {
-    // Audio-reactive parameter updates
-    // For now, just pass through to update
+    // Store audio data for fallback when update() called without it
+    this.lastAudioData = audioData
+    // Audio-reactive parameter updates will be implemented here
   }
 
   update(deltaTime: number, audioData?: AudioData): void {
     if (!this.currentMode) return
+
+    // Use provided audioData or fall back to last received data
+    const currentAudioData = audioData ?? this.lastAudioData
 
     // Fixed timestep physics
     this.accumulator += deltaTime
 
     let substeps = 0
     while (this.accumulator >= this.physicsDelta && substeps < this.maxSubsteps) {
-      this.currentMode.update(this.physicsDelta, this.parameters, audioData!)
+      this.currentMode.update(this.physicsDelta, this.parameters, currentAudioData ?? undefined)
       this.accumulator -= this.physicsDelta
       substeps++
     }
