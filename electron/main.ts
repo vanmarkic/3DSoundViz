@@ -5,6 +5,7 @@
 
 import { app, BrowserWindow, ipcMain } from 'electron'
 import path from 'path'
+import * as fs from 'fs'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -97,6 +98,33 @@ ipcMain.handle('stop-recording', async (event, recordingId) => {
   console.log('Stopping recording:', recordingId)
   // Implementation would finalize recording
   return { success: true, filename: 'recording.mp4' }
+})
+
+// Handle sensitivity changes
+ipcMain.handle('save-audio-sensitivity', async (event, sensitivity: any) => {
+  try {
+    // Load current config
+    const configPath = path.join(app.getPath('userData'), 'app-config.json')
+    let config: any = {}
+
+    if (fs.existsSync(configPath)) {
+      const data = fs.readFileSync(configPath, 'utf-8')
+      config = JSON.parse(data)
+    }
+
+    // Update audio sensitivity
+    if (!config.audio) config.audio = {}
+    config.audio.sensitivity = sensitivity
+
+    // Save config
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2))
+    console.log('Saved audio sensitivity:', sensitivity)
+
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to save audio sensitivity:', error)
+    return { success: false, error: String(error) }
+  }
 })
 
 // Handle errors
