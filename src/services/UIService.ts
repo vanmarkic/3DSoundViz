@@ -13,10 +13,21 @@ import type {
 } from '@core/types'
 import { ParameterService } from './ParameterService'
 
+/**
+ * Interface for AudioService - defines the contract for audio functionality
+ */
+interface AudioServiceInterface {
+  setMasterSensitivity(percent: number): void
+  setLowSensitivity(percent: number): void
+  setMidSensitivity(percent: number): void
+  setHighSensitivity(percent: number): void
+  getSensitivities(): AudioSensitivity
+}
+
 export class UIService implements Disposable {
   private container: HTMLElement | null = null
   private parameterService: ParameterService | null = null
-  private audioService: any = null
+  private audioService: AudioServiceInterface | null = null
   private unsubscribers: Array<() => void> = []
   private isInitialized = false
   private isVisible = true
@@ -31,7 +42,7 @@ export class UIService implements Disposable {
   /**
    * Initialize UI service
    */
-  initialize(parameterService: ParameterService, audioService?: any): void {
+  initialize(parameterService: ParameterService, audioService?: AudioServiceInterface): void {
     if (this.isInitialized) {
       console.warn('UIService already initialized')
       return
@@ -447,6 +458,7 @@ export class UIService implements Disposable {
 
     if (masterSlider) {
       masterSlider.addEventListener('input', (e) => {
+        if (!this.audioService) return
         const value = parseInt((e.target as HTMLInputElement).value)
         this.audioService.setMasterSensitivity(value)
         if (masterValue) masterValue.textContent = `${value}%`
@@ -456,6 +468,7 @@ export class UIService implements Disposable {
 
     if (lowSlider) {
       lowSlider.addEventListener('input', (e) => {
+        if (!this.audioService) return
         const value = parseInt((e.target as HTMLInputElement).value)
         this.audioService.setLowSensitivity(value)
         if (lowValue) lowValue.textContent = `${value}%`
@@ -465,6 +478,7 @@ export class UIService implements Disposable {
 
     if (midSlider) {
       midSlider.addEventListener('input', (e) => {
+        if (!this.audioService) return
         const value = parseInt((e.target as HTMLInputElement).value)
         this.audioService.setMidSensitivity(value)
         if (midValue) midValue.textContent = `${value}%`
@@ -474,11 +488,56 @@ export class UIService implements Disposable {
 
     if (highSlider) {
       highSlider.addEventListener('input', (e) => {
+        if (!this.audioService) return
         const value = parseInt((e.target as HTMLInputElement).value)
         this.audioService.setHighSensitivity(value)
         if (highValue) highValue.textContent = `${value}%`
         this.debouncedSaveSensitivity()
       })
+    }
+
+    // Load current values from AudioService
+    this.loadCurrentSensitivityValues()
+  }
+
+  /**
+   * Load current sensitivity values from AudioService into UI
+   */
+  private loadCurrentSensitivityValues(): void {
+    if (!this.audioService) return
+
+    const sensitivities = this.audioService.getSensitivities()
+
+    // Update sliders
+    const masterSlider = document.getElementById('master-sensitivity') as HTMLInputElement
+    const lowSlider = document.getElementById('low-sensitivity') as HTMLInputElement
+    const midSlider = document.getElementById('mid-sensitivity') as HTMLInputElement
+    const highSlider = document.getElementById('high-sensitivity') as HTMLInputElement
+
+    // Update value displays
+    const masterValue = document.getElementById('master-value')
+    const lowValue = document.getElementById('low-value')
+    const midValue = document.getElementById('mid-value')
+    const highValue = document.getElementById('high-value')
+
+    if (masterSlider) {
+      masterSlider.value = sensitivities.master.toString()
+      if (masterValue) masterValue.textContent = `${sensitivities.master}%`
+    }
+
+    if (lowSlider) {
+      lowSlider.value = sensitivities.low.toString()
+      if (lowValue) lowValue.textContent = `${sensitivities.low}%`
+    }
+
+    if (midSlider) {
+      midSlider.value = sensitivities.mid.toString()
+      if (midValue) midValue.textContent = `${sensitivities.mid}%`
+    }
+
+    if (highSlider) {
+      highSlider.value = sensitivities.high.toString()
+      if (highValue) highValue.textContent = `${sensitivities.high}%`
     }
   }
 
