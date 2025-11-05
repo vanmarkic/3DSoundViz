@@ -7,6 +7,7 @@ import { eventBus } from '@core/EventBus'
 import type {
   AudioConfig,
   AudioData,
+  AudioSensitivity,
   FrequencyBands,
   BeatData,
   SpectralData,
@@ -416,6 +417,69 @@ export class AudioService implements Disposable {
         this.initialize(this.config)
       }
     }
+  }
+
+  /**
+   * Set master sensitivity (smoothed over 200ms)
+   */
+  setMasterSensitivity(percent: number): void {
+    this.targetMasterSensitivity = Math.max(
+      this.MIN_SENSITIVITY,
+      Math.min(this.MAX_SENSITIVITY, percent)
+    )
+    this.emitSensitivityChange()
+  }
+
+  /**
+   * Set low frequency sensitivity (instant)
+   */
+  setLowSensitivity(percent: number): void {
+    this.lowSensitivity = Math.max(
+      this.MIN_SENSITIVITY,
+      Math.min(this.MAX_SENSITIVITY, percent)
+    )
+    this.emitSensitivityChange()
+  }
+
+  /**
+   * Set mid frequency sensitivity (instant)
+   */
+  setMidSensitivity(percent: number): void {
+    this.midSensitivity = Math.max(
+      this.MIN_SENSITIVITY,
+      Math.min(this.MAX_SENSITIVITY, percent)
+    )
+    this.emitSensitivityChange()
+  }
+
+  /**
+   * Set high frequency sensitivity (instant)
+   */
+  setHighSensitivity(percent: number): void {
+    this.highSensitivity = Math.max(
+      this.MIN_SENSITIVITY,
+      Math.min(this.MAX_SENSITIVITY, percent)
+    )
+    this.emitSensitivityChange()
+  }
+
+  /**
+   * Get current sensitivity values
+   */
+  getSensitivities(): AudioSensitivity {
+    return {
+      master: this.targetMasterSensitivity,  // Return target, not smoothed
+      low: this.lowSensitivity,
+      mid: this.midSensitivity,
+      high: this.highSensitivity
+    }
+  }
+
+  /**
+   * Emit sensitivity changed event
+   */
+  private emitSensitivityChange(): void {
+    eventBus.emit('audio:sensitivity-changed', this.getSensitivities())
   }
 
   /**
