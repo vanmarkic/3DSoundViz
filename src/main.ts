@@ -147,8 +147,7 @@ class AutoVJApp {
     // Initialize LFO service
     this.lfoService.initialize(this.parameterService)
 
-    // Initialize UI
-    this.uiService.initialize(this.parameterService)
+    // UIService will be fully initialized after audioService is ready
 
     // Initialize data source service
     this.dataSourceService.initialize()
@@ -291,6 +290,13 @@ class AutoVJApp {
                 fftSize: 2048,
                 smoothingTimeConstant: 0.8
               })
+
+              // Initialize UIService with audioService reference
+              if (this.uiService && this.parameterService && this.audioService) {
+                this.uiService.initialize(this.parameterService, this.audioService as any)
+                console.log('✅ UIService initialized with audio sensitivity controls')
+              }
+
               overlay.remove()
               resolve()
             }
