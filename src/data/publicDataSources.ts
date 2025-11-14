@@ -584,6 +584,211 @@ export const PUBLIC_DATA_SOURCES: PublicDataSourceTemplate[] = [
       },
     ],
   },
+
+  // ============================================================================
+  // AI & Generative Content (Note: Most require API keys)
+  // ============================================================================
+  {
+    name: 'Reddit r/all Stream',
+    description: 'Live stream of Reddit posts and comments (includes bot activity)',
+    category: 'social',
+    source: {
+      type: 'api',
+      name: 'Reddit Stream',
+      url: 'https://www.reddit.com/r/all/new.json?limit=10',
+      method: 'GET',
+      pollInterval: 10000, // 10 seconds
+      dataPath: '$.data.children',
+    },
+    suggestedMappings: [
+      {
+        dataPath: '$.data.children.length',
+        description: 'Number of new posts',
+        suggestedParameter: 'complexity',
+      },
+      {
+        dataPath: '$.data.children[0].data.score',
+        description: 'Post score',
+        suggestedParameter: 'glitchAmount',
+      },
+    ],
+  },
+  {
+    name: 'Hacker News Live',
+    description: 'Real-time Hacker News items (tech discussions)',
+    category: 'social',
+    source: {
+      type: 'api',
+      name: 'Hacker News',
+      url: 'https://hacker-news.firebaseio.com/v0/newstories.json',
+      method: 'GET',
+      pollInterval: 30000, // 30 seconds
+      dataPath: '$',
+    },
+    suggestedMappings: [
+      {
+        dataPath: '$.length',
+        description: 'Number of stories',
+        suggestedParameter: 'complexity',
+      },
+    ],
+  },
+  {
+    name: 'Wikipedia Recent Changes',
+    description: 'Live stream of Wikipedia edits worldwide',
+    category: 'social',
+    source: {
+      type: 'websocket',
+      name: 'Wikipedia Changes',
+      url: 'wss://stream.wikimedia.org/v2/stream/recentchange',
+      dataPath: '$',
+    },
+    suggestedMappings: [
+      {
+        dataPath: '$.length',
+        description: 'Edit length',
+        suggestedParameter: 'fragmentation',
+      },
+      {
+        dataPath: '$.bot',
+        description: 'Bot edit indicator',
+        suggestedParameter: 'glitchAmount',
+      },
+    ],
+  },
+  {
+    name: 'Mastodon Public Timeline',
+    description: 'Federated social network public posts stream',
+    category: 'social',
+    source: {
+      type: 'api',
+      name: 'Mastodon Public',
+      url: 'https://mastodon.social/api/v1/timelines/public?limit=20',
+      method: 'GET',
+      pollInterval: 15000, // 15 seconds
+      dataPath: '$',
+    },
+    suggestedMappings: [
+      {
+        dataPath: '$.length',
+        description: 'Number of posts',
+        suggestedParameter: 'rotationSpeed',
+      },
+      {
+        dataPath: '$[0].favourites_count',
+        description: 'Likes count',
+        suggestedParameter: 'colorIntensity',
+      },
+    ],
+  },
+  {
+    name: 'Random Word Generator',
+    description: 'Continuous random word generation (simulates AI text)',
+    category: 'random',
+    source: {
+      type: 'api',
+      name: 'Random Words',
+      url: 'https://random-word-api.herokuapp.com/word?number=10',
+      method: 'GET',
+      pollInterval: 5000, // 5 seconds
+      dataPath: '$',
+    },
+    suggestedMappings: [
+      {
+        dataPath: '$.length',
+        description: 'Number of words',
+        suggestedParameter: 'motionBlur',
+      },
+    ],
+  },
+  {
+    name: 'Quotable - Random Quotes',
+    description: 'Random inspirational quotes (like AI wisdom)',
+    category: 'other',
+    source: {
+      type: 'api',
+      name: 'Random Quotes',
+      url: 'https://api.quotable.io/random',
+      method: 'GET',
+      pollInterval: 8000, // 8 seconds
+      dataPath: '$',
+    },
+    suggestedMappings: [
+      {
+        dataPath: '$.length',
+        description: 'Quote length',
+        suggestedParameter: 'depth',
+      },
+    ],
+  },
+  {
+    name: 'JokeAPI - Programming Jokes',
+    description: 'Random programming jokes (bot-like humor)',
+    category: 'other',
+    source: {
+      type: 'api',
+      name: 'Programming Jokes',
+      url: 'https://v2.jokeapi.dev/joke/Programming?type=single',
+      method: 'GET',
+      pollInterval: 10000, // 10 seconds
+      dataPath: '$',
+    },
+    suggestedMappings: [
+      {
+        dataPath: '$.joke',
+        description: 'Joke text',
+        suggestedParameter: 'asymmetry',
+      },
+    ],
+  },
+  {
+    name: 'OpenLibrary Recent Changes',
+    description: 'Book database edits and updates',
+    category: 'other',
+    source: {
+      type: 'api',
+      name: 'OpenLibrary Updates',
+      url: 'https://openlibrary.org/recentchanges.json?limit=10',
+      method: 'GET',
+      pollInterval: 20000, // 20 seconds
+      dataPath: '$',
+    },
+    suggestedMappings: [
+      {
+        dataPath: '$.length',
+        description: 'Number of changes',
+        suggestedParameter: 'liquidity',
+      },
+    ],
+  },
+  {
+    name: 'Twitch Top Streams',
+    description: 'Live streaming data (includes AI VTubers)',
+    category: 'social',
+    source: {
+      type: 'api',
+      name: 'Twitch Streams',
+      url: 'https://api.twitch.tv/helix/streams',
+      method: 'GET',
+      headers: {
+        'Client-ID': 'demo'
+      },
+      pollInterval: 60000, // 1 minute
+      dataPath: '$.data',
+    },
+    suggestedMappings: [
+      {
+        dataPath: '$.data.length',
+        description: 'Number of live streams',
+        suggestedParameter: 'complexity',
+      },
+      {
+        dataPath: '$.data[0].viewer_count',
+        description: 'Viewer count',
+        suggestedParameter: 'scale',
+      },
+    ],
+  },
 ]
 
 /**
