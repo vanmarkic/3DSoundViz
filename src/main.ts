@@ -9,6 +9,8 @@ import { LFOService } from '@services/LFOService'
 import { RenderEngine } from '@services/RenderEngine'
 import { VisualService } from '@services/VisualService'
 import { UIService } from '@services/UIService'
+import { DataSourceService } from '@services/DataSourceService'
+import { DataSourcePanel } from './ui/DataSourcePanel'
 import { container } from '@core/ServiceContainer'
 import { eventBus } from '@core/EventBus'
 import type { AudioData, ParameterValues } from '@core/types'
@@ -24,6 +26,8 @@ class AutoVJApp {
   private renderEngine: RenderEngine | null = null
   private visualService: VisualService | null = null
   private uiService: UIService | null = null
+  private dataSourceService: DataSourceService | null = null
+  private dataSourcePanel: DataSourcePanel | null = null
 
   // State
   private isRunning = false
@@ -65,6 +69,7 @@ class AutoVJApp {
       console.log('✅ AutoVJ initialized successfully!')
       console.log('📱 Controls:')
       console.log('  - H: Toggle UI')
+      console.log('  - D: Toggle Data Sources')
       console.log('  - R: Reset parameters')
       console.log('  - 1-9: Quick presets')
       console.log('  - Double-click slider: Reset to default')
@@ -102,6 +107,7 @@ class AutoVJApp {
     this.renderEngine = new RenderEngine()
     this.visualService = new VisualService()
     this.uiService = new UIService()
+    this.dataSourceService = new DataSourceService()
 
     // Register in container
     container.registerInstance('audioService', this.audioService)
@@ -110,6 +116,7 @@ class AutoVJApp {
     container.registerInstance('renderEngine', this.renderEngine)
     container.registerInstance('visualService', this.visualService)
     container.registerInstance('uiService', this.uiService)
+    container.registerInstance('dataSourceService', this.dataSourceService)
 
     // Initialize services
     this.parameterService.initialize()
@@ -129,6 +136,13 @@ class AutoVJApp {
 
     this.visualService.initialize(this.renderEngine)
     this.uiService.initialize(this.parameterService)
+    this.dataSourceService.initialize()
+
+    // Create data source panel
+    this.dataSourcePanel = new DataSourcePanel(document.body, this.dataSourceService)
+
+    // Set up keyboard shortcuts
+    this.setupKeyboardShortcuts()
 
     // Create some default LFOs
     this.createDefaultLFOs()
@@ -139,6 +153,26 @@ class AutoVJApp {
     if (isMobile) {
       console.log('📱 Mobile device detected - using optimized settings')
     }
+  }
+
+  /**
+   * Set up keyboard shortcuts
+   */
+  private setupKeyboardShortcuts(): void {
+    document.addEventListener('keydown', (event) => {
+      switch (event.key.toLowerCase()) {
+        case 'h':
+          // Toggle UI visibility (existing functionality)
+          break
+        case 'd':
+          // Toggle data source panel
+          this.dataSourcePanel?.toggle()
+          break
+        case 'r':
+          // Reset parameters (existing functionality)
+          break
+      }
+    })
   }
 
   /**
@@ -346,6 +380,7 @@ class AutoVJApp {
     this.stop()
 
     // Dispose services
+    this.dataSourceService?.dispose()
     this.uiService?.dispose()
     this.visualService?.dispose()
     this.renderEngine?.dispose()
