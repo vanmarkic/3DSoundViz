@@ -33,20 +33,102 @@ export const PUBLIC_DATA_SOURCES: PublicDataSourceTemplate[] = [
     ],
   },
   {
-    name: 'Coinbase WebSocket - ETH/USD',
-    description: 'Real-time Ethereum price from Coinbase',
+    name: 'Binance WebSocket - ETH/USDT',
+    description: 'Real-time Ethereum price from Binance',
     category: 'crypto',
     source: {
       type: 'websocket',
-      name: 'Coinbase ETH/USD',
-      url: 'wss://ws-feed.exchange.coinbase.com',
-      dataPath: '$.price',
+      name: 'Binance ETH/USDT',
+      url: 'wss://stream.binance.com:9443/ws/ethusdt@trade',
+      dataPath: '$.p',
     },
     suggestedMappings: [
       {
-        dataPath: '$.price',
+        dataPath: '$.p',
         description: 'Ethereum price',
         suggestedParameter: 'colorIntensity',
+      },
+      {
+        dataPath: '$.q',
+        description: 'Quantity traded',
+        suggestedParameter: 'fragmentation',
+      },
+    ],
+  },
+  {
+    name: 'Binance WebSocket - SOL/USDT',
+    description: 'Real-time Solana price from Binance',
+    category: 'crypto',
+    source: {
+      type: 'websocket',
+      name: 'Binance SOL/USDT',
+      url: 'wss://stream.binance.com:9443/ws/solusdt@trade',
+      dataPath: '$.p',
+    },
+    suggestedMappings: [
+      {
+        dataPath: '$.p',
+        description: 'Solana price',
+        suggestedParameter: 'rotationSpeed',
+      },
+    ],
+  },
+  {
+    name: 'Binance WebSocket - BNB/USDT',
+    description: 'Real-time BNB price from Binance',
+    category: 'crypto',
+    source: {
+      type: 'websocket',
+      name: 'Binance BNB/USDT',
+      url: 'wss://stream.binance.com:9443/ws/bnbusdt@trade',
+      dataPath: '$.p',
+    },
+    suggestedMappings: [
+      {
+        dataPath: '$.p',
+        description: 'BNB price',
+        suggestedParameter: 'depth',
+      },
+    ],
+  },
+  {
+    name: 'Binance Aggregated Trades - BTC',
+    description: 'Bitcoin aggregated trade stream with volume',
+    category: 'crypto',
+    source: {
+      type: 'websocket',
+      name: 'Binance BTC Aggregated',
+      url: 'wss://stream.binance.com:9443/ws/btcusdt@aggTrade',
+      dataPath: '$.p',
+    },
+    suggestedMappings: [
+      {
+        dataPath: '$.p',
+        description: 'Price',
+        suggestedParameter: 'scale',
+      },
+      {
+        dataPath: '$.q',
+        description: 'Quantity',
+        suggestedParameter: 'complexity',
+      },
+    ],
+  },
+  {
+    name: 'Kraken WebSocket - BTC/USD',
+    description: 'Real-time Bitcoin ticker from Kraken',
+    category: 'crypto',
+    source: {
+      type: 'websocket',
+      name: 'Kraken BTC/USD',
+      url: 'wss://ws.kraken.com',
+      dataPath: '$',
+    },
+    suggestedMappings: [
+      {
+        dataPath: '$',
+        description: 'Market data',
+        suggestedParameter: 'glitchAmount',
       },
     ],
   },
@@ -305,6 +387,200 @@ export const PUBLIC_DATA_SOURCES: PublicDataSourceTemplate[] = [
         dataPath: '$.features.length',
         description: 'Number of earthquakes',
         suggestedParameter: 'complexity',
+      },
+    ],
+  },
+
+  // ============================================================================
+  // Real-time Data Streams (WebSocket)
+  // ============================================================================
+  {
+    name: 'Blockchain.com WebSocket - BTC Transactions',
+    description: 'Live Bitcoin transaction stream',
+    category: 'crypto',
+    source: {
+      type: 'websocket',
+      name: 'Blockchain.com BTC TX',
+      url: 'wss://ws.blockchain.info/inv',
+      dataPath: '$.x',
+    },
+    suggestedMappings: [
+      {
+        dataPath: '$.x.out[0].value',
+        description: 'Transaction value',
+        suggestedParameter: 'glitchAmount',
+      },
+    ],
+  },
+  {
+    name: 'Finnhub WebSocket - Stock Trades',
+    description: 'Real-time stock market trades (requires free API key)',
+    category: 'finance',
+    source: {
+      type: 'websocket',
+      name: 'Finnhub Stocks',
+      url: 'wss://ws.finnhub.io?token=demo',
+      dataPath: '$.data',
+    },
+    suggestedMappings: [
+      {
+        dataPath: '$.data[0].p',
+        description: 'Stock price',
+        suggestedParameter: 'scale',
+      },
+      {
+        dataPath: '$.data[0].v',
+        description: 'Volume',
+        suggestedParameter: 'complexity',
+      },
+    ],
+  },
+  {
+    name: 'IEX Cloud WebSocket - Market Data',
+    description: 'Real-time stock quotes (sandbox/demo)',
+    category: 'finance',
+    source: {
+      type: 'websocket',
+      name: 'IEX Cloud',
+      url: 'wss://sandbox-sse.iexapis.com/stable/stocksUSNoUTP?token=Tpk_demo',
+      dataPath: '$',
+    },
+    suggestedMappings: [
+      {
+        dataPath: '$.price',
+        description: 'Stock price',
+        suggestedParameter: 'colorIntensity',
+      },
+    ],
+  },
+  {
+    name: 'Polygon.io WebSocket - Forex',
+    description: 'Real-time forex currency exchange rates',
+    category: 'finance',
+    source: {
+      type: 'websocket',
+      name: 'Polygon Forex',
+      url: 'wss://socket.polygon.io/forex',
+      dataPath: '$',
+    },
+    suggestedMappings: [
+      {
+        dataPath: '$.p',
+        description: 'Exchange rate',
+        suggestedParameter: 'asymmetry',
+      },
+    ],
+  },
+  {
+    name: 'Bitmex WebSocket - Bitcoin Perpetual',
+    description: 'Bitcoin perpetual swap real-time data',
+    category: 'crypto',
+    source: {
+      type: 'websocket',
+      name: 'Bitmex BTC Perp',
+      url: 'wss://www.bitmex.com/realtime',
+      dataPath: '$.data',
+    },
+    suggestedMappings: [
+      {
+        dataPath: '$.data[0].price',
+        description: 'Contract price',
+        suggestedParameter: 'scale',
+      },
+    ],
+  },
+  {
+    name: 'Deribit WebSocket - Options',
+    description: 'Crypto options and futures real-time',
+    category: 'crypto',
+    source: {
+      type: 'websocket',
+      name: 'Deribit',
+      url: 'wss://www.deribit.com/ws/api/v2',
+      dataPath: '$.params.data',
+    },
+    suggestedMappings: [
+      {
+        dataPath: '$.params.data.last_price',
+        description: 'Last price',
+        suggestedParameter: 'rotationSpeed',
+      },
+    ],
+  },
+  {
+    name: 'Messari WebSocket - Asset Metrics',
+    description: 'Real-time cryptocurrency metrics',
+    category: 'crypto',
+    source: {
+      type: 'websocket',
+      name: 'Messari Metrics',
+      url: 'wss://data.messari.io/v1/ws',
+      dataPath: '$.payload',
+    },
+    suggestedMappings: [
+      {
+        dataPath: '$.payload.market_data.price_usd',
+        description: 'Asset price USD',
+        suggestedParameter: 'depth',
+      },
+    ],
+  },
+  {
+    name: 'CryptoCompare WebSocket - Multi Crypto',
+    description: 'Multiple cryptocurrency streams',
+    category: 'crypto',
+    source: {
+      type: 'websocket',
+      name: 'CryptoCompare',
+      url: 'wss://streamer.cryptocompare.com/v2',
+      dataPath: '$',
+    },
+    suggestedMappings: [
+      {
+        dataPath: '$.PRICE',
+        description: 'Current price',
+        suggestedParameter: 'motionBlur',
+      },
+    ],
+  },
+  {
+    name: 'Twelvedata WebSocket - Stocks',
+    description: 'Real-time stock market data',
+    category: 'finance',
+    source: {
+      type: 'websocket',
+      name: 'Twelvedata Stocks',
+      url: 'wss://ws.twelvedata.com/v1/quotes/price',
+      dataPath: '$',
+    },
+    suggestedMappings: [
+      {
+        dataPath: '$.price',
+        description: 'Stock price',
+        suggestedParameter: 'contrast',
+      },
+    ],
+  },
+  {
+    name: 'CoinCap WebSocket - All Assets',
+    description: 'Real-time data for 1000+ crypto assets',
+    category: 'crypto',
+    source: {
+      type: 'websocket',
+      name: 'CoinCap Assets',
+      url: 'wss://ws.coincap.io/prices?assets=ALL',
+      dataPath: '$',
+    },
+    suggestedMappings: [
+      {
+        dataPath: '$.bitcoin',
+        description: 'Bitcoin price',
+        suggestedParameter: 'scale',
+      },
+      {
+        dataPath: '$.ethereum',
+        description: 'Ethereum price',
+        suggestedParameter: 'colorIntensity',
       },
     ],
   },
