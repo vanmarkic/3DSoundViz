@@ -13,6 +13,10 @@ import type {
   Disposable
 } from '@core/types'
 import { RenderEngine } from './RenderEngine'
+// @ts-ignore
+import palettes from 'nice-color-palettes'
+// @ts-ignore
+import random from 'canvas-sketch-util/random'
 
 interface GeometricElement {
   mesh: THREE.Mesh | THREE.InstancedMesh
@@ -26,7 +30,7 @@ interface GeometricElement {
 
 export class VisualService implements Disposable {
   private scene: THREE.Scene
-  private camera: THREE.PerspectiveCamera
+  private camera: THREE.OrthographicCamera
   private renderEngine: RenderEngine | null = null
 
   private elements: GeometricElement[] = []
@@ -34,7 +38,7 @@ export class VisualService implements Disposable {
 
   private config: VisualConfig = {
     aesthetic: 'constructivist',
-    colorPalette: ['#FF0000', '#000000', '#FFFFFF', '#FFD700', '#0000FF'],
+    colorPalette: random.pick(palettes),
     complexity: 50,
     seed: Math.random()
   }
@@ -53,17 +57,22 @@ export class VisualService implements Disposable {
   constructor() {
     // Create scene
     this.scene = new THREE.Scene()
-    this.scene.background = new THREE.Color(0x0a0a0a)
+    // Light gray background like the old aesthetic
+    this.scene.background = new THREE.Color('hsl(0, 0%, 95%)')
 
-    // Create camera
-    this.camera = new THREE.PerspectiveCamera(
-      60,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
+    // Create orthographic camera for isometric view
+    const aspect = window.innerWidth / window.innerHeight
+    const zoom = 1.85
+    this.camera = new THREE.OrthographicCamera(
+      -zoom * aspect,
+      zoom * aspect,
+      zoom,
+      -zoom,
+      -100,
+      100
     )
-    this.camera.position.set(0, 0, 30)
-    this.camera.lookAt(0, 0, 0)
+    this.camera.position.set(zoom, zoom, zoom)
+    this.camera.lookAt(new THREE.Vector3())
 
     // Create shared geometries
     this.cubeGeometry = new THREE.BoxGeometry(1, 1, 1)
@@ -97,28 +106,11 @@ export class VisualService implements Disposable {
    * Set up scene lighting
    */
   private setupLighting(): void {
-    // Ambient light
-    const ambient = new THREE.AmbientLight(0x404040, 0.5)
-    this.scene.add(ambient)
-    this.lights.push(ambient)
-
-    // Main directional light
-    const mainLight = new THREE.DirectionalLight(0xffffff, 1.0)
-    mainLight.position.set(5, 10, 7)
-    this.scene.add(mainLight)
-    this.lights.push(mainLight)
-
-    // Fill light
-    const fillLight = new THREE.DirectionalLight(0x4080ff, 0.3)
-    fillLight.position.set(-5, 0, -5)
-    this.scene.add(fillLight)
-    this.lights.push(fillLight)
-
-    // Rim light
-    const rimLight = new THREE.DirectionalLight(0xff8040, 0.4)
-    rimLight.position.set(0, -5, -10)
-    this.scene.add(rimLight)
-    this.lights.push(rimLight)
+    // Soft hemisphere light like the old aesthetic
+    const light = new THREE.HemisphereLight('white', 'gray', 2)
+    light.position.set(1000, 300, 2000)
+    this.scene.add(light)
+    this.lights.push(light)
   }
 
   /**
@@ -181,17 +173,17 @@ export class VisualService implements Disposable {
         geometry = this.cubeGeometry
     }
 
-    // Constructivist colors (bold, primary)
+    // Use palette colors like the old aesthetic
     const colors = this.config.colorPalette
     const colorIndex = Math.floor(this.seededRandom(index + 100) * colors.length)
     const color = new THREE.Color(colors[colorIndex])
 
-    // Material with flat shading for geometric look
+    // Material matching the old cubes.js style
     const material = new THREE.MeshStandardMaterial({
       color,
-      metalness: 0.3,
-      roughness: 0.7,
-      flatShading: true
+      metalness: 0.5,
+      roughness: 1,
+      flatShading: false
     })
 
     const mesh = new THREE.Mesh(geometry, material)
@@ -363,13 +355,49 @@ export class VisualService implements Disposable {
       this.generateScene()
     }
 
-    // Update each element
+    // Get frequency data - use the raw frequency data like the old code
+    // Use the first channel's frequency data
+    const frequencyData = audioData.frequencyData[0] || new Float32Array(0)
+
+    // Update each element with noise-based animation like the old cubes.js
     for (let i = 0; i < this.elements.length; i++) {
       const element = this.elements[i]
       const mesh = element.mesh
 
+      // Get frequency value for this mesh (if available)
+      const freqValue = frequencyData[i] || 0
+
+      // Original noise-based position animation from cubes.js
+      const f = 1
+      const noiseScale = freqValue / 128
+
+      mesh.position.x = element.basePosition.x + (freqValue / 128) *
+        random.noise3D(
+          element.basePosition.x * f * noiseScale,
+          element.basePosition.y * f * noiseScale,
+          element.basePosition.z * f * noiseScale,
+          this.time * 2
+        )
+
+      mesh.position.y = element.basePosition.y + (freqValue / 128) *
+        random.noise3D(
+          element.basePosition.x * f * noiseScale + 100,
+          element.basePosition.y * f * noiseScale + 100,
+          element.basePosition.z * f * noiseScale + 100,
+          this.time * 2
+        )
+
+      mesh.position.z = element.basePosition.z + (freqValue / 128) *
+        random.noise3D(
+          element.basePosition.x * f * noiseScale + 200,
+          element.basePosition.y * f * noiseScale + 200,
+          element.basePosition.z * f * noiseScale + 200,
+          this.time * 2
+        )
+
+      // Apply parameter-based modulation on top of the noise animation
       // Scale based on parameter and audio
-      const audioScale = 1 + audioData.bands[0]?.bass * params.scale * 2
+      const audioScale = 1 + audioData.bands[0]?.bass * params.scale * 0.5
       mesh.scale.copy(element.baseScale).multiplyScalar(audioScale)
 
       // Rotation based on rotationSpeed parameter
@@ -378,15 +406,11 @@ export class VisualService implements Disposable {
       mesh.rotation.z += element.rotationVelocity.z * params.rotationSpeed * 10
 
       // Fragmentation: separate elements based on parameter
-      const fragmentOffset = new THREE.Vector3()
-        .copy(element.velocity)
-        .multiplyScalar(params.fragmentation * 20)
-      mesh.position.copy(element.basePosition).add(fragmentOffset)
-
-      // Audio-reactive position displacement
-      if (audioData.bands[0]) {
-        const audioOffset = audioData.bands[0].bass * params.depth * 5
-        mesh.position.y += Math.sin(this.time + i) * audioOffset
+      if (params.fragmentation > 0.1) {
+        const fragmentOffset = new THREE.Vector3()
+          .copy(element.velocity)
+          .multiplyScalar(params.fragmentation * 20)
+        mesh.position.add(fragmentOffset)
       }
 
       // Color intensity
@@ -424,16 +448,8 @@ export class VisualService implements Disposable {
       }
     }
 
-    // Update camera based on parameters
-    const depth = params.depth * 20 + 20
-    this.camera.position.z = depth
-
-    // Camera liquid motion
-    if (params.liquidity > 0.3) {
-      this.camera.position.x = Math.sin(this.time * 0.2) * params.liquidity * 2
-      this.camera.position.y = Math.cos(this.time * 0.15) * params.liquidity * 1.5
-      this.camera.lookAt(0, 0, 0)
-    }
+    // Keep camera in isometric position (like the old code)
+    // Don't move camera based on parameters to preserve the classic view
 
     // Store previous params
     this.previousParams = { ...params }
@@ -457,7 +473,7 @@ export class VisualService implements Disposable {
   /**
    * Get camera
    */
-  getCamera(): THREE.PerspectiveCamera {
+  getCamera(): THREE.OrthographicCamera {
     return this.camera
   }
 
@@ -481,7 +497,13 @@ export class VisualService implements Disposable {
    * Handle window resize
    */
   handleResize(width: number, height: number): void {
-    this.camera.aspect = width / height
+    // Update orthographic camera for new aspect ratio
+    const aspect = width / height
+    const zoom = 1.85
+    this.camera.left = -zoom * aspect
+    this.camera.right = zoom * aspect
+    this.camera.top = zoom
+    this.camera.bottom = -zoom
     this.camera.updateProjectionMatrix()
   }
 

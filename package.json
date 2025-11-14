@@ -13,13 +13,21 @@
     "lint": "eslint src --ext .ts,.tsx",
     "typecheck": "tsc --noEmit"
   },
-  "keywords": ["vj", "audio", "visualization", "electron", "three.js"],
+  "keywords": [
+    "vj",
+    "audio",
+    "visualization",
+    "electron",
+    "three.js"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "three": "^0.160.0",
+    "canvas-sketch-util": "^1.10.0",
     "eventemitter3": "^5.0.1",
-    "stats.js": "^0.17.0"
+    "nice-color-palettes": "^4.0.0",
+    "stats.js": "^0.17.0",
+    "three": "^0.160.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.5",
@@ -48,13 +56,22 @@
     ],
     "mac": {
       "category": "public.app-category.graphics-design",
-      "target": ["dmg", "zip"]
+      "target": [
+        "dmg",
+        "zip"
+      ]
     },
     "win": {
-      "target": ["nsis", "portable"]
+      "target": [
+        "nsis",
+        "portable"
+      ]
     },
     "linux": {
-      "target": ["AppImage", "deb"],
+      "target": [
+        "AppImage",
+        "deb"
+      ],
       "category": "Graphics"
     }
   }
