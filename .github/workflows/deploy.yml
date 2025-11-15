@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - claude/restore-animation-aesthetics-01VSEQxhHm2hy9LZtCRsevya
+      - master
   workflow_dispatch:
 
 permissions:
