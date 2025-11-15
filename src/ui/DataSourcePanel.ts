@@ -28,19 +28,19 @@ export class DataSourcePanel {
     this.panel.id = 'data-source-panel'
     this.panel.style.cssText = `
       position: fixed;
-      top: 60px;
-      right: 20px;
-      width: 350px;
-      max-height: 80vh;
-      background: rgba(0, 0, 0, 0.9);
-      border: 1px solid #333;
+      top: 20px;
+      left: 20px;
+      width: 380px;
+      max-height: 85vh;
+      background: rgba(0, 0, 0, 0.95);
+      border: 2px solid #4A9EFF;
       border-radius: 8px;
       padding: 20px;
       color: #fff;
       font-family: 'Monaco', 'Courier New', monospace;
       font-size: 12px;
       overflow-y: auto;
-      z-index: 999;
+      z-index: 1001;
       display: none;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
     `
@@ -77,7 +77,7 @@ export class DataSourcePanel {
     const publicSection = document.createElement('div')
     publicSection.innerHTML = '<h4 style="color: #4A9EFF; margin: 15px 0 10px 0;">Public APIs</h4>'
 
-    PUBLIC_DATA_SOURCES.slice(0, 5).forEach((template) => {
+    PUBLIC_DATA_SOURCES.forEach((template) => {
       const item = document.createElement('div')
       item.style.cssText = `
         background: rgba(255, 255, 255, 0.05);
@@ -239,8 +239,10 @@ export class DataSourcePanel {
   toggle(): void {
     if (this.isVisible) {
       this.hide()
+      console.log('📊 Data Source Panel hidden')
     } else {
       this.show()
+      console.log('📊 Data Source Panel shown -', PUBLIC_DATA_SOURCES.length, 'APIs available')
     }
   }
 }
