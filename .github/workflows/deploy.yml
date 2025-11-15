@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - claude/auto-vj-solution-011CUoTmZmc9cuU7WNircwiG
+      - claude/restore-animation-aesthetics-01VSEQxhHm2hy9LZtCRsevya
   workflow_dispatch:
 
 permissions:

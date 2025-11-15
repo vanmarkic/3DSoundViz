@@ -3,6 +3,65 @@
  */
 
 // ============================================================================
+// Data Source Types
+// ============================================================================
+
+export type DataSourceType = 'audio' | 'api' | 'websocket'
+
+export interface DataPoint {
+  name: string
+  value: number
+  timestamp: number
+  metadata?: Record<string, any>
+}
+
+export interface APIDataSource {
+  id: string
+  type: 'api'
+  name: string
+  url: string
+  method: 'GET' | 'POST'
+  headers?: Record<string, string>
+  pollInterval: number // milliseconds
+  dataPath: string // JSONPath to extract data
+  enabled: boolean
+}
+
+export interface WebSocketDataSource {
+  id: string
+  type: 'websocket'
+  name: string
+  url: string
+  protocols?: string[]
+  dataPath: string // JSONPath to extract data
+  enabled: boolean
+}
+
+export type DataSource = APIDataSource | WebSocketDataSource
+
+export interface DataSourceMapping {
+  sourceId: string
+  dataPath: string // Path to specific data point
+  parameter: ParameterName
+  scale: [number, number] // Input range
+  range: [number, number] // Output range
+  curve: 'linear' | 'exponential' | 'logarithmic'
+}
+
+// Predefined public APIs and WebSockets
+export interface PublicDataSourceTemplate {
+  name: string
+  description: string
+  category: 'crypto' | 'weather' | 'social' | 'finance' | 'random' | 'other'
+  source: Omit<APIDataSource, 'id' | 'enabled'> | Omit<WebSocketDataSource, 'id' | 'enabled'>
+  suggestedMappings?: Array<{
+    dataPath: string
+    description: string
+    suggestedParameter: ParameterName
+  }>
+}
+
+// ============================================================================
 // Audio Types
 // ============================================================================
 
@@ -187,6 +246,15 @@ export interface ServiceEvents {
   'audio:data': AudioData
   'audio:beat': BeatData
   'audio:error': Error
+
+  // Data source events
+  'datasource:added': DataSource
+  'datasource:removed': string
+  'datasource:updated': DataSource
+  'datasource:data': { sourceId: string; data: DataPoint[] }
+  'datasource:error': { sourceId: string; error: Error }
+  'datasource:mapping-added': DataSourceMapping
+  'datasource:mapping-removed': string
 
   // Parameter events
   'param:changed': { name: ParameterName; value: number }
