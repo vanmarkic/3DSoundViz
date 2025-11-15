@@ -35,6 +35,8 @@ class AutoVJApp {
   private isRunning = false
   private lastFrameTime = 0
   private currentAudioData: AudioData | null = null
+  private resizeHandler: (() => void) | null = null
+  private keyboardHandler: ((event: KeyboardEvent) => void) | null = null
 
   /**
    * Initialize the application
@@ -65,7 +67,8 @@ class AutoVJApp {
       })
 
       // Handle window resize
-      window.addEventListener('resize', () => this.handleResize())
+      this.resizeHandler = () => this.handleResize()
+      window.addEventListener('resize', this.resizeHandler)
 
       // Show ready message
       console.log('✅ AutoVJ initialized successfully!')
@@ -174,20 +177,17 @@ class AutoVJApp {
    * Set up keyboard shortcuts
    */
   private setupKeyboardShortcuts(): void {
-    document.addEventListener('keydown', (event) => {
+    this.keyboardHandler = (event: KeyboardEvent) => {
       switch (event.key.toLowerCase()) {
-        case 'h':
-          // Toggle UI visibility (existing functionality)
-          break
         case 'd':
           // Toggle data source panel
+          event.preventDefault()
           this.dataSourcePanel?.toggle()
           break
-        case 'r':
-          // Reset parameters (existing functionality)
-          break
+        // Note: 'h' and 'r' are handled by UIService to avoid conflicts
       }
-    })
+    }
+    document.addEventListener('keydown', this.keyboardHandler)
   }
 
   /**
@@ -418,7 +418,19 @@ class AutoVJApp {
   async dispose(): Promise<void> {
     this.stop()
 
+    // Remove event listeners
+    if (this.resizeHandler) {
+      window.removeEventListener('resize', this.resizeHandler)
+      this.resizeHandler = null
+    }
+
+    if (this.keyboardHandler) {
+      document.removeEventListener('keydown', this.keyboardHandler)
+      this.keyboardHandler = null
+    }
+
     // Dispose services
+    this.dataSourcePanel?.dispose()
     this.dataSourceService?.dispose()
     this.uiService?.dispose()
     this.visualService?.dispose()

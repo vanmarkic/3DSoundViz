@@ -38,6 +38,7 @@ export class UIService implements Disposable {
   private sensitivityContainer: HTMLElement | null = null
   private saveSensitivityTimeout: number | null = null
   private readonly SAVE_DEBOUNCE_MS = 500
+  private keyboardHandler: ((e: KeyboardEvent) => void) | null = null
 
   /**
    * Initialize UI service
@@ -333,23 +334,29 @@ export class UIService implements Disposable {
    * Setup keyboard shortcuts
    */
   private setupKeyboardShortcuts(): void {
-    document.addEventListener('keydown', (e) => {
+    this.keyboardHandler = (e: KeyboardEvent) => {
       // H - Toggle UI visibility
       if (e.key === 'h' || e.key === 'H') {
+        e.preventDefault()
         this.toggleVisibility()
+        return
       }
 
       // R - Reset parameters
       if (e.key === 'r' || e.key === 'R') {
+        e.preventDefault()
         this.parameterService?.reset()
+        return
       }
 
-      // Number keys 1-9,0 - Quick parameter presets
+      // Number keys 1-9 - Quick parameter presets
       if (e.key >= '1' && e.key <= '9') {
+        e.preventDefault()
         const presetIndex = parseInt(e.key) - 1
         this.loadQuickPreset(presetIndex)
       }
-    })
+    }
+    document.addEventListener('keydown', this.keyboardHandler)
   }
 
   /**
@@ -589,6 +596,12 @@ export class UIService implements Disposable {
   dispose(): void {
     this.unsubscribers.forEach(unsub => unsub())
     this.unsubscribers = []
+
+    // Remove keyboard event listener
+    if (this.keyboardHandler) {
+      document.removeEventListener('keydown', this.keyboardHandler)
+      this.keyboardHandler = null
+    }
 
     if (this.container?.parentElement) {
       this.container.parentElement.removeChild(this.container)

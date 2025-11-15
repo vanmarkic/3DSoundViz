@@ -13,6 +13,7 @@ export class DataSourcePanel {
   private dataSourceService: DataSourceService
   private panel: HTMLDivElement | null = null
   private isVisible = false
+  private updateInterval: number | null = null
 
   constructor(container: HTMLElement, dataSourceService: DataSourceService) {
     this.container = container
@@ -122,7 +123,7 @@ export class DataSourcePanel {
     this.container.appendChild(this.panel)
 
     // Update active sources periodically
-    setInterval(() => this.updateActiveSources(), 1000)
+    this.updateInterval = window.setInterval(() => this.updateActiveSources(), 1000)
   }
 
   /**
@@ -132,10 +133,15 @@ export class DataSourcePanel {
     const container = document.getElementById('active-sources-container')
     if (!container) return
 
-    // Keep title
+    // Remove existing items while preserving the title
     const title = container.querySelector('h4')
-    container.innerHTML = ''
-    if (title) container.appendChild(title)
+    const existingItems = container.querySelectorAll(':scope > div')
+    existingItems.forEach((item) => {
+      // Keep the title if it exists
+      if (item !== title) {
+        item.remove()
+      }
+    })
 
     const sources = this.dataSourceService.getDataSources()
 
@@ -244,5 +250,24 @@ export class DataSourcePanel {
       this.show()
       console.log('📊 Data Source Panel shown -', PUBLIC_DATA_SOURCES.length, 'APIs available')
     }
+  }
+
+  /**
+   * Dispose resources and clean up
+   */
+  dispose(): void {
+    // Clear update interval
+    if (this.updateInterval !== null) {
+      clearInterval(this.updateInterval)
+      this.updateInterval = null
+    }
+
+    // Remove panel from DOM
+    if (this.panel && this.panel.parentElement) {
+      this.panel.parentElement.removeChild(this.panel)
+    }
+
+    this.panel = null
+    this.isVisible = false
   }
 }
