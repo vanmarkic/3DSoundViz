@@ -12,13 +12,17 @@ export class DataSourcePanel {
   private container: HTMLElement
   private dataSourceService: DataSourceService
   private panel: HTMLDivElement | null = null
-  private isVisible = false
+  private isVisible = true // Start visible for debugging
   private updateInterval: number | null = null
 
   constructor(container: HTMLElement, dataSourceService: DataSourceService) {
     this.container = container
     this.dataSourceService = dataSourceService
     this.createPanel()
+    
+    // Expose to window for debugging
+    ;(window as any).dataSourcePanel = this
+    console.log('📊 DataSourcePanel created. Press D to toggle, or call window.dataSourcePanel.show()')
   }
 
   /**
@@ -42,7 +46,7 @@ export class DataSourcePanel {
       font-size: 12px;
       overflow-y: auto;
       z-index: 1001;
-      display: none;
+      display: block;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
     `
 
@@ -124,6 +128,14 @@ export class DataSourcePanel {
 
     // Update active sources periodically
     this.updateInterval = window.setInterval(() => this.updateActiveSources(), 1000)
+    
+    // Debug: Log panel creation
+    console.log('📊 DataSourcePanel DOM element created:', {
+      panelId: this.panel.id,
+      parent: this.panel.parentElement?.tagName,
+      apiCount: PUBLIC_DATA_SOURCES.length,
+      panelInDOM: document.getElementById('data-source-panel') !== null
+    })
   }
 
   /**

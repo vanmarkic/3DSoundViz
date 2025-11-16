@@ -182,12 +182,17 @@ class AutoVJApp {
         case 'd':
           // Toggle data source panel
           event.preventDefault()
+          console.log('🔑 D key pressed, toggling data source panel...', {
+            panelExists: this.dataSourcePanel !== null,
+            panelMethod: typeof this.dataSourcePanel?.toggle
+          })
           this.dataSourcePanel?.toggle()
           break
         // Note: 'h' and 'r' are handled by UIService to avoid conflicts
       }
     }
     document.addEventListener('keydown', this.keyboardHandler)
+    console.log('⌨️  Keyboard shortcuts registered (D for Data Sources)')
   }
 
   /**
