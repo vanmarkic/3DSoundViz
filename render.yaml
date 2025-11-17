@@ -1,7 +1,7 @@
 services:
   # Node.js app
   - type: web
-    name: 3DSoundViz-web
+    name: ambientViz-web
     runtime: node
     buildCommand: npm install
     startCommand: npm start
@@ -12,14 +12,14 @@ services:
     
   # Python app (if needed)
   - type: web
-    name: 3DSoundViz-api
+    name: ambientViz-api
     runtime: python
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app
 
 databases:
-  - name: 3DSoundViz-db
-    databaseName: 3DSoundViz
+  - name: ambientViz-db
+    databaseName: ambientViz
     plan: starter  # $7/month, or 'free' for 90-day trial
 
 # Optional: Background workers, cron jobs, etc.
